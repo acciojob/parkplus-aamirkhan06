@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ParkingLotServiceImpl implements ParkingLotService {
@@ -31,7 +32,12 @@ public class ParkingLotServiceImpl implements ParkingLotService {
     public Spot addSpot(int parkingLotId, Integer numberOfWheels, Integer pricePerHour)
     {
         //make the spot
-        ParkingLot parkingLot = parkingLotRepository1.findById(parkingLotId).get();
+        Optional<ParkingLot> parkingLotOptional=parkingLotRepository1.findById(parkingLotId);
+        if(!parkingLotOptional.isPresent())
+        {
+            return null;
+        }
+        ParkingLot parkingLot = parkingLotOptional.get();
         Spot spot = new Spot();
         if(numberOfWheels<=2)
         {
