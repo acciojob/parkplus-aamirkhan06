@@ -20,6 +20,6 @@ public class ReservationController {
         //If parkingLot is not found, user is not found, or no spot is available, throw "Cannot make reservation" exception.
 
         Reservation reservation=reservationService.reserveSpot(userId,parkingLotId,timeInHours,numberOfWheels);
-        return reservation;
+        return null;
     }
 }
