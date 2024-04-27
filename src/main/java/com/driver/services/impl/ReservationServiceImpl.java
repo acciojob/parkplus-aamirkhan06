@@ -27,13 +27,15 @@ public class ReservationServiceImpl implements ReservationService {
     {
         Optional<ParkingLot> parkingLotOpt = parkingLotRepository3.findById(parkingLotId);
         if(!parkingLotOpt.isPresent()){
-            throw new Exception("Cannot make reservation");
+            //throw new Exception("Cannot make reservation");
+            return null;
         }
         ParkingLot parkingLot = parkingLotOpt.get();
 
         Optional<User> userOpt = userRepository3.findById(userId);
         if(!userOpt.isPresent()){
-            throw new Exception("Cannot make reservation");
+//            throw new Exception("Cannot make reservation");
+            return null;
         }
         User user = userOpt.get();
         Spot requiredSpot=null;
@@ -56,7 +58,8 @@ public class ReservationServiceImpl implements ReservationService {
             }
         }
         if(requiredSpot==null){
-            throw new Exception("Cannot make reservation");
+            //throw new Exception("Cannot make reservation");
+            return null;
         }
 
         Reservation reservation=new Reservation();
