@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -24,14 +25,17 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public Reservation reserveSpot(Integer userId, Integer parkingLotId, Integer timeInHours, Integer numberOfWheels) throws Exception
     {
-        ParkingLot parkingLot=parkingLotRepository3.findById(parkingLotId).get();
-        if(parkingLot==null){
+        Optional<ParkingLot> parkingLotOpt = parkingLotRepository3.findById(parkingLotId);
+        if(!parkingLotOpt.isPresent()){
             throw new Exception("Cannot make reservation");
         }
-        User user=userRepository3.findById(userId).get();
-        if(user==null){
+        ParkingLot parkingLot = parkingLotOpt.get();
+
+        Optional<User> userOpt = userRepository3.findById(userId);
+        if(!userOpt.isPresent()){
             throw new Exception("Cannot make reservation");
         }
+        User user = userOpt.get();
         Spot requiredSpot=null;
         int finalHourPrice=Integer.MAX_VALUE;
         List<Spot> spotList=parkingLot.getSpotList();
