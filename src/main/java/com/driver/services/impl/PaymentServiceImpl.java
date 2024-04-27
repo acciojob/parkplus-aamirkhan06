@@ -20,53 +20,33 @@ public class PaymentServiceImpl implements PaymentService {
     PaymentRepository paymentRepository2;
 
     @Override
-    public Payment pay(Integer reservationId, int amountSent, String mode) throws Exception
-    {
-        Reservation reservation = reservationRepository2.findById(reservationId).get();
+    public Payment pay(Integer reservationId, int amountSent, String mode) throws Exception {
+        Reservation reservation;
+        try {
+            reservation = reservationRepository2.findById(reservationId).get();
 
-        int totalAmount = reservation.getNumberOfHours() * reservation.getSpot().getPricePerHour();
+        }catch (Exception e){
+            throw new RuntimeException();
+        }
+        Payment payment = new Payment();
 
-        if(amountSent<totalAmount)
-        {
+        // amount check and mode check
+        int bill = reservation.getSpot().getPricePerHour() * reservation.getNumberOfHours();
+
+        if(amountSent < bill){
             throw new Exception("Insufficient Amount");
         }
-        Payment payment;
-        if(mode.equalsIgnoreCase("CASH"))
-        {
-            payment = new Payment();
-            payment.setPaymentCompleted(true);
-            payment.setPaymentMode(PaymentMode.CASH);
-            payment.setReservation(reservation);
-            reservation.setPayment(payment);
-            reservationRepository2.save(reservation);
-
-        } else if (mode.equalsIgnoreCase("CARD")) {
-
-            payment = new Payment();
-            payment.setPaymentCompleted(true);
-            payment.setPaymentMode(PaymentMode.CARD);
-            payment.setReservation(reservation);
-            reservation.setPayment(payment);
-            reservationRepository2.save(reservation);
-        } else if (mode.equalsIgnoreCase("UPI")) {
-
-            payment = new Payment();
-            payment.setPaymentCompleted(true);
-            payment.setPaymentMode(PaymentMode.UPI);
-            payment.setReservation(reservation);
-            reservation.setPayment(payment);
-            reservationRepository2.save(reservation);
-        }
-        else {
-            payment = new Payment();
-            payment.setPaymentCompleted(false);
-//            payment.setPaymentMode(PaymentMode.valueOf(mode));
-            reservation.setPayment(payment);
-            payment.setReservation(reservation);
-            reservationRepository2.save(reservation);
+        if (!mode.toUpperCase().equals("CASH") && !mode.toUpperCase().equals("CARD") && !mode.toUpperCase().equals("UPI") ) {
             throw new Exception("Payment mode not detected");
         }
 
+        PaymentMode paymentMode = PaymentMode.valueOf(mode.toUpperCase());
+        payment.setPaymentMode(paymentMode);
+        payment.setPaymentCompleted(true);
+        payment.setReservation(reservation);
+        reservation.setPayment(payment);
+
+        reservationRepository2.save(reservation);
         return payment;
     }
 }
